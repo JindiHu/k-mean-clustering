@@ -45,18 +45,21 @@ if __name__ == "__main__":
     if sys.version_info[0:2] != (3, 11):
         raise Exception("Requires python 3.11")
 
+    cluster_params = [
+        {'mean': [2, 2], 'std': 0.5, 'size': 100},
+        {'mean': [8, 2], 'std': 2.0, 'size': 100},
+        {'mean': [2, 8], 'std': 1.0, 'size': 50},
+        {'mean': [8, 8], 'std': 0.5, 'size': 150}
+    ]
+
+    # Generate data for each cluster
+    clusters = [np.random.normal(loc=params['mean'], scale=params['std'], size=(params['size'], 2)) for params in
+                cluster_params]
+
+
     np.random.seed(0)
-
-    # Create four distinct clusters
-    data = np.concatenate([np.random.normal(loc=[2, 2], scale=1, size=(100, 2)),
-                           np.random.normal(loc=[8, 2], scale=1, size=(100, 2)),
-                           np.random.normal(loc=[2, 8], scale=1, size=(100, 2)),
-                           np.random.normal(loc=[8, 8], scale=1, size=(100, 2))])
-
-    # Add some noise between the clusters
-    noise = np.random.normal(loc=[5, 5], scale=1, size=(40, 2))
-    data = np.vstack((data, noise))
-
+    # Concatenate the clusters to create the final dataset
+    data = np.concatenate(clusters)
 
     # Initialize and fit the K-means model
     cluster_assignments, centroids = KMeans(data=data, k=4, label="A")
@@ -69,7 +72,7 @@ if __name__ == "__main__":
     plt.savefig("./figures/A_clustering.png")
     plt.show()
 
-    cluster_assignments, centroids = KMeans(data=data, k=3, label="B")
+    cluster_assignments, centroids = KMeans(data=data, k=4, label="B")
 
     # Plot the data points and centroids
     plt.scatter(data[:, 0], data[:, 1], c=cluster_assignments, cmap='viridis')
